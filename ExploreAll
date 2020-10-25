@@ -63,7 +63,7 @@ def scan_dockerhub(target:str, proc_quant:int, page:int, end:int, page_size:int,
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Docker Images Scanner')
+    parser = argparse.ArgumentParser(description='Docker Images Scanner.\nThis script receives a keyword and it starts to scan all matching DockerHub images.')
     requiredGroup = parser.add_argument_group('Required arguments')
     requiredGroup.add_argument('-t','--target',
                                 help='Keyword to search in dockerhub',

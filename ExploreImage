@@ -10,12 +10,12 @@ import os
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(description='Scan a single/list of Docker images')
+    parser = argparse.ArgumentParser(description='Scan a single image or a given list of DockerHub images')
     parser.add_argument('-i','--image',
-                                help='Image to scan in dockerhub. It will be used the last version',
+                                help='Image to scan in dockerhub. It will be used the latest version by default. The format is repository/image_name:tag.',
                                 default=None)            
     parser.add_argument('-f','--file',
-                                help='File with list of images to scan',
+                                help='File with list of images to scan in the format repository/image_name:tag.',
                                 default= None)      
     parser.add_argument('-o','--output',
                         help="Directory where to store matching files. Will use ./ by default.",
@@ -34,7 +34,7 @@ if __name__ == '__main__':
                         type= int,
                         default=45)                      
     parser.add_argument("-p", "--processes",
-                        help= 'Amount of parallel processes',
+                        help= 'Amount of parallel processes. Default is 4.',
                         type= int,
                         default=4)
     options= parser.parse_args()                        
