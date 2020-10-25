@@ -4,25 +4,32 @@
 
 # Docker Images Explorer
 
-This tool intends to scan (for the moment) Dockerhub images that match a given keyword in order to find secrets. The scan engine used is a fork from [Whispers](https://github.com/Skyscanner/whispers).
+This tool scans (for the moment) Dockerhub images that match a given keyword in order to find "forgotten" secrets. The scan engine used is a modified fork from [Whispers](https://github.com/Skyscanner/whispers).
+
+Using the tool, I found numerous AWS credentials, SSH private keys, databases, API keys, etc. It’s an interesting tool to add to the bug hunter / pentester arsenal. If you a DevOps or Security Engineer, you might want to integrate the scan engine in your CI/CD for your Docker images.
+
+## Prerequisites: 
+
+* Python3
+* Pip3
+* Docker
 
 
 ## Installation (tested in Ubuntu and macOS)
 
-To prepare the environment for Docker Explorer (install whispers and Python requirements), run the following commands:
-
-**PREREQUISITE: Python3 + Pip3**
+Since the execution of this tool can take a long time and it's very CPU demanding, it's recommended to run it in a VPS running Ubuntu (I'm working on a Terraform template to ease the setup). To prepare the environment for Docker Explorer (install whispers and Python requirements), run the following commands:
 
 ```
 git clone https://www.github.com/matiassequeira/docker_explorer
 cd docker_explorer
 chmod +x install.sh
+export PATH=$(pwd):$PATH
 ./install.sh
 ```
 
 ## Usage
 
-I recommend to run this tool in a fresh new directory in order to keep the tool separate from the output. Momentarily, there are two scripts you can execute according to your needs:
+It's recommended to run this tool in a fresh new directory in order to keep the tool separate from the output. Momentarily, there are two scripts you can execute according to your needs:
 
 ### ExploreAll
 
@@ -85,7 +92,7 @@ optional arguments:
                         Amount of parallel processes. Default is 4.
 ```
 
-An example of this command that a specific image is:
+An example of this command to scan a specific image is:
 
 ```
 ./ExploreImage -i repository/image_name:image_tag 

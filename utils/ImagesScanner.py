@@ -4,6 +4,7 @@ import docker
 import time
 import os
 
+from sys import platform
 from requests import request
 from utils.Log import getLogger
 LOG = getLogger(__name__)
@@ -43,12 +44,17 @@ def scan_image(image_name:str, tmp_path:str, whispers_config:str, whispers_outpu
     try:
         output_dir= os.path.join(whispers_output, container_name)
 
-        if whispers_config:
-            # whispers = subprocess.run(f"whispers -d {output_dir} -c {whispers_config} {tmp_dump}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            whispers = subprocess.run(f"timeout {whispers_timeout} whispers -d {output_dir} -c {whispers_config} {tmp_dump}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if platform == "linux" or platform == "linux2":
+            # In linux it can be used the shell command `timeout` to limit Whispers execution
+            if whispers_config:
+                whispers = subprocess.run(f"timeout {whispers_timeout} whispers -d {output_dir} -c {whispers_config} {tmp_dump}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            else:
+                whispers = subprocess.run(f"timeout {whispers_timeout} whispers -d {output_dir} {tmp_dump}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         else:
-            # whispers = subprocess.run(f"whispers -d {output_dir} {tmp_dump}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            whispers = subprocess.run(f"timeout {whispers_timeout} whispers -d {output_dir} {tmp_dump}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if whispers_config:
+                whispers = subprocess.run(f"whispers -d {output_dir} -c {whispers_config} {tmp_dump}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            else:
+                whispers = subprocess.run(f"whispers -d {output_dir} {tmp_dump}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     except subprocess.TimeoutExpired as e:
         LOG.debug(f"Timeout: {image_name}")
