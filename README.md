@@ -68,6 +68,13 @@ An example of this command that scans all the images matching the keyword **aws*
 ./ExploreAll -t aws
 ```
 
+If you're using a VPS with Ubuntu, I recommend to leave it running in background with the `nohup` (no hangup) command and redirect the logs to a file that you can `cat` to track progress:
+
+```
+nohup ExploreAll -t aws &> out.txt &
+tail -f out.txt
+```
+
 ### ExploreImage
 
 ```
