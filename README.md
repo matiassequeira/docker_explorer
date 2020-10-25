@@ -4,7 +4,7 @@
 
 # Docker Images Explorer
 
-This tool intends to scan (for the moment) Dockerhub images that match a given keyword in order to find secrets. The scan engine used is a fork from [whispers](hhttps://github.com/Skyscanner/whispers), created by [Artëm Tsvetkov](https://github.com/adeptex) and [Christian Martorella](https://github.com/laramies).
+This tool intends to scan (for the moment) Dockerhub images that match a given keyword in order to find secrets. The scan engine used is a fork from [Whispers](https://github.com/Skyscanner/whispers).
 
 
 ## Installation
