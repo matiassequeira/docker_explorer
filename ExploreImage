@@ -45,8 +45,10 @@ if __name__ == '__main__':
     proc_quant= options.processes
     tmp_path= options.tmp
     whispers_config= options.config
+    LOG.debug(f"Using whisper config {os.path.abspath(whispers_config)}")
     whispers_timeout=options.timeout*60
     whispers_output= options.output if options.output is not None else os.getcwd()
+    LOG.debug(f"Using output path {whispers_output}")
 
     try:
         if options.image:
