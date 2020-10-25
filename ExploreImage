@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+
+from utils.ImagesScanner import scan_image
+from multiprocessing import Process
+from time import sleep
+
+import argparse
+import logging
+import os
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Scan a single/list of Docker images')
+    parser.add_argument('-i','--image',
+                                help='Image to scan in dockerhub. It will be used the last version',
+                                default=None)            
+    parser.add_argument('-f','--file',
+                                help='File with list of images to scan',
+                                default= None)      
+    parser.add_argument('-o','--output',
+                        help="Directory where to store matching files. Will use ./ by default.",
+                        default=None
+                        ) 
+    parser.add_argument('-c','--config',
+                        help="Whispers custom config filepath. By default will use Docker Explorer whispers config.",
+                        default='../whispers/whispers/config.yml'
+                        )      
+    parser.add_argument('--tmp',
+                        help="Temporary path to dump the filesystem and perform the scan. Default is /tmp",
+                        default='/tmp/'
+                        ) 
+    parser.add_argument("--timeout",
+                        help= 'Timeout in minutes for scan engine execution per image. Default 45 minutes.',
+                        type= int,
+                        default=45)                      
+    parser.add_argument("-p", "--processes",
+                        help= 'Amount of parallel processes',
+                        type= int,
+                        default=4)
+    options= parser.parse_args()                        
+
+    if options.image is None and options.file is None:
+        print("Provide either an image or file\n")
+
+    proc_quant= options.processes
+    tmp_path= options.tmp
+    whispers_config= options.config
+    whispers_timeout=options.timeout*60
+    whispers_output= options.output if options.output is not None else os.getcwd()
+
+    try:
+        if options.image:
+            scan_image(options.image,tmp_path,whispers_config, whispers_output, whispers_timeout)
+        else:
+            images_list= open(options.file,"r")
+            processes=list()
+            for line in images_list.readlines():
+                if len(processes) < proc_quant:
+                    p = Process(target=scan_image, args=(line.strip(),tmp_path,whispers_config, whispers_timeout,))
+                    p.start()
+                    processes.append(p)
+
+                while len(processes) >= proc_quant:
+                    for proc in processes:
+                        if not proc.is_alive():
+                            processes.remove(proc)
+                    sleep(5)
+            for proc in processes:
+                proc.join() 
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        logging.exception(f"Error: {e}")
+

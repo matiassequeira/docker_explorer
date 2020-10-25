@@ -1,0 +1,122 @@
+#!/usr/bin/env python3
+
+import subprocess
+import argparse
+import os
+
+from requests import request
+from multiprocessing import Process
+from time import sleep
+from utils.ImagesScanner import scan_image
+from utils.Log import getLogger
+LOG = getLogger(__name__)
+
+def scan_dockerhub(target:str, proc_quant:int, page:int, end:int, page_size:int, order_by_pull_count:str):
+    url= f"https://hub.docker.com/v2/search/repositories?query={target}&page={page}&page_size={page_size}"    
+    
+    if order_by_pull_count:
+        if order_by_pull_count=='ASC': url+="&ordering=pull_count"
+        else: url+="&ordering=-pull_count"
+
+    headers = {
+            "Accept": "application/json", 
+            "Search-Version": "v3", 
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:75.0) Gecko/20100101 Firefox/75.0", 
+            "Connection": "close",  
+            "Accept-Encoding": "gzip, deflate", 
+            "Accept-Language": "en-US,en;q=0.5", 
+            "Content-Type": "application/json"
+    }
+
+    processes=list()
+    while end is None or page<=end:    
+        response = request("GET", url, headers=headers)
+        response= response.json()
+        images_count= response["count"]
+        LOG.debug(f"Found {images_count} images. ")
+
+        index=1
+        for image_data in response["results"]:
+            
+            while len(processes) >= proc_quant:
+                for proc in processes:
+                    if not proc.is_alive():
+                        LOG.debug("removed process")
+                        processes.remove(proc)
+                sleep(5)
+
+            LOG.debug(f"Image {index} page {page}")
+            
+            if len(processes) < proc_quant:
+                p = Process(target=scan_image, args=(image_data["repo_name"],tmp_path,whispers_config, whispers_output, whispers_timeout,))
+                p.start()
+                processes.append(p)
+                index+=1
+
+        page=page+1
+        url=response.get('next')
+        if url is None or len(url)==0:
+            LOG.debug(f"Reached end of result")
+            break
+        
+    return 
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Docker Images Scanner')
+    requiredGroup = parser.add_argument_group('Required arguments')
+    requiredGroup.add_argument('-t','--target',
+                                help='Keyword to search in dockerhub',
+                                required = True)  
+    parser.add_argument('-c','--config',
+                        help="Whispers custom config filepath. By default will use Docker Explorer whispers config.",
+                        default='../whispers/whispers/config.yml'
+                        )      
+    parser.add_argument('-o','--output',
+                        help="Directory where to store matching files. Will use ./ by default.",
+                        default=None
+                        )    
+    parser.add_argument('--tmp',
+                        help="Temporary path to dump the filesystem and perform the scan. Default is /tmp",
+                        default='/tmp/'
+                        ) 
+    parser.add_argument("--page_size",
+                        help= 'Size of the Dockerhub API page. Default 100.',
+                        type= int,
+                        default=100)
+    parser.add_argument("--timeout",
+                        help= 'Timeout in minutes for scan engine execution per image. Default 45 minutes.',
+                        type= int,
+                        default=45)   
+    parser.add_argument("--order-by-pull-count",
+                        help= 'Order by the amount of pull counts of the image. The lesser pulls, the newer the image.',
+                        nargs='?',
+                        choices=['ASC', 'DESC'],
+                        default=None)                       
+    parser.add_argument("-p", "--processes",
+                        help= 'Amount of parallel processes. Default is 4',
+                        type= int,
+                        default=4)
+    parser.add_argument("--start",
+                        help= 'Start page',
+                        type= int,
+                        default=1)      
+    parser.add_argument("--end",
+                        help= 'End page',
+                        type= int,
+                        default=None)                        
+    options= parser.parse_args()                        
+
+    
+    tmp_path= options.tmp
+    whispers_config= options.config
+    whispers_timeout=options.timeout*60
+    whispers_output= options.output if options.output is not None else os.getcwd()
+
+    LOG.debug(f"Using output path {whispers_output}")
+
+    try:
+        scan_dockerhub(options.target, proc_quant=options.processes, page=options.start, end=options.end, page_size=options.page_size, order_by_pull_count=options.order_by_pull_count)
+    except KeyboardInterrupt:
+        # mkdir = subprocess.run(f"rm -rf {tmp_path}explore_*", shell=True, stdout=subprocess.PIPE, text=True, check=True)
+        pass
