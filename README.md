@@ -6,7 +6,7 @@
 
 This tool scans (for the moment) Dockerhub images that match a given keyword in order to find "forgotten" secrets. The scan engine used is a modified fork from [Whispers](https://github.com/Skyscanner/whispers).
 
-Using the tool, I found numerous AWS credentials, SSH private keys, databases, API keys, etc. It’s an interesting tool to add to the bug hunter / pentester arsenal. If you a DevOps or Security Engineer, you might want to integrate the scan engine in your CI/CD for your Docker images.
+Using the tool, I found numerous AWS credentials, SSH private keys, databases, API keys, etc. It’s an interesting tool to add to the bug hunter / pentester arsenal, not only for the possibility of finding secrets, but for fingerprinting an organization. If you are a DevOps or Security Engineer, you might want to integrate the scan engine to your CI/CD for your Docker images.
 
 ## Prerequisites: 
 
