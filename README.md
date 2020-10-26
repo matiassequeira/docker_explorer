@@ -128,5 +128,6 @@ cleanup.sh
 
 ## TODO
 * Integrate with quay.io
-* Add functionality to explore older version of an image
+* ExploreImage: Add functionality to explore older version of an image
 * Add plugin to whispers: Run string command on binaries and report strings that meet certain entropy and extra conditions.
+* Allow scanning a repository profile / list of profiles

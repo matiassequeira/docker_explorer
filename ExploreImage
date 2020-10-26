@@ -15,10 +15,10 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Scan a single image or a given list of DockerHub images')
     parser.add_argument('-i','--image',
-                                help='Image to scan in dockerhub. It will be used the latest version by default. The format is repository/image_name:tag.',
+                                help='Image to scan in dockerhub. It will be used the latest version by default. The format is repository/image_name. It will be scanned the last version.',
                                 default=None)            
     parser.add_argument('-f','--file',
-                                help='File with list of images to scan in the format repository/image_name:tag.',
+                                help='File with list of images to scan in the format repository/image_name. It will be scanned the last version.',
                                 default= None)      
     parser.add_argument('-o','--output',
                         help="Directory where to store matching files. Will use ./ by default.",
@@ -61,7 +61,7 @@ if __name__ == '__main__':
             processes=list()
             for line in images_list.readlines():
                 if len(processes) < proc_quant:
-                    p = Process(target=scan_image, args=(line.strip(),tmp_path,whispers_config, whispers_timeout,))
+                    p = Process(target=scan_image, args=(line.strip(),tmp_path,whispers_config, whispers_output, whispers_timeout,))
                     p.start()
                     processes.append(p)
 
