@@ -15,10 +15,10 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Scan a single image or a given list of DockerHub images')
     parser.add_argument('-i','--image',
-                                help='Image to scan in dockerhub. It will be used the latest version by default. The format is repository/image_name. It will be scanned the last version.',
+                                help='Image to scan in dockerhub in the format repository/image_name. It will be used the latest version by default.',
                                 default=None)            
     parser.add_argument('-f','--file',
-                                help='File with list of images to scan in the format repository/image_name. It will be scanned the last version.',
+                                help='File with list of images to scan in the format repository/image_name. It will be used the latest version by default.',
                                 default= None)      
     parser.add_argument('-o','--output',
                         help="Directory where to store matching files. Will use ./ by default.",

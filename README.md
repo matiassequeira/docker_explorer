@@ -86,9 +86,10 @@ Scan a single image or a given list of DockerHub images
 optional arguments:
   -h, --help            show this help message and exit
   -i IMAGE, --image IMAGE
-                        Image to scan in dockerhub. It will be used the latest version by default. The format is
-                        repository/image_name:tag.
-  -f FILE, --file FILE  File with list of images to scan in the format repository/image_name:tag.
+                        Image to scan in dockerhub in the format repository/image_name. It will be used the latest version by
+                        default.
+  -f FILE, --file FILE  File with list of images to scan in the format repository/image_name. It will be used the latest version
+                        by default.
   -o OUTPUT, --output OUTPUT
                         Directory where to store matching files. Will use ./ by default.
   -c CONFIG, --config CONFIG
@@ -102,7 +103,7 @@ optional arguments:
 An example of this command to scan a specific image is:
 
 ```
-./ExploreImage -i repository/image_name:image_tag 
+./ExploreImage -i repository/image_name
 ```
 
 ## Data triage
