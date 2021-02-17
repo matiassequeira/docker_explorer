@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/matiassequeira/docker_explorer/blob/master/utils/docker_explorer_transparent_v6.jpg" />
+  <img src="https://github.com/matiassequeira/docker_explorer/blob/master/utils/docker_explorer_transparent_v6.png" />
 </p>
 
 # Docker Images Explorer
